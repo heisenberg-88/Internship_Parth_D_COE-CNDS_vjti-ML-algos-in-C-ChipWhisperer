@@ -4,7 +4,7 @@
 
 
 
-// sigmoid of whole array
+// sigmoid
 // tested & working
 float sigmoid(float n){
     float s = 1/(1 + exp(-n));
@@ -41,7 +41,6 @@ float* propagate(float* w, float b , int dim ){
 
     // activated value calculated for each value
     // tested and working 
-    
     float A[NoOfEx];
     for(int i=0;i<NoOfEx;i++){
         float temp = 0.0;
@@ -52,7 +51,6 @@ float* propagate(float* w, float b , int dim ){
     }
     
     
-
     // cost calculated considering all values
     //tested and working
     float cost = 0;
@@ -71,7 +69,6 @@ float* propagate(float* w, float b , int dim ){
         temp1[i] = (A[i]-y_train[i]);
     }
 
-    
     for(int i=0;i<dim;i++){
         float temp2 = 0;
         for(int j=0;j<NoOfEx;j++){
@@ -82,7 +79,6 @@ float* propagate(float* w, float b , int dim ){
     }
     
 
-    
     float db = 0;
     for(int i=0;i<NoOfEx;i++){
         db+=temp1[i];
@@ -90,7 +86,6 @@ float* propagate(float* w, float b , int dim ){
     db/=NoOfEx;
     dw[dim] = db;
     dw[dim+1] = cost;
-
 
     return dw;
 }
@@ -117,7 +112,7 @@ float* optimize(float* w,float b,int num_iterations,float learning_rate, int dim
     float cost;
     float dw[dim];
 
-
+    float vartemp = 0.0;
 
     // for loop for num_iterations
     // tested and working
@@ -140,10 +135,11 @@ float* optimize(float* w,float b,int num_iterations,float learning_rate, int dim
 
         if(i%100==0){
             printf("cost/loss after %d iterations is %f \n",i+1,cost);
+            vartemp = cost;
         }
     }
-
-
+    float tempac = (100.0)*vartemp;
+    printf("Accuracy : %f \n",100.0-tempac);
 
     float *infovec = malloc(sizeof(float) * (dim+dim+2));
     
@@ -210,12 +206,11 @@ float* predict(float* w,float b,int dim){
 // testing
 void printaccuracy(int dimention){
 
-
     // initialize weights and biases
     float* w = weightinit(dimention);
     float b = 0.0;
     
-
+    
     // optimize function for optimizing weights and biases
     float* infovec = optimize(w,b,2000,0.005,dimention);
 
@@ -236,17 +231,16 @@ void printaccuracy(int dimention){
     // calculating training accuracy
     float accu_train = 0.0;
     float temp = 0.0;
-    for(int i=0;i<dimention;i++){
+    for(int i=0;i<NoOfEx;i++){
         temp+= (abs(y_train[i] - y_preds_train[i]));
     }
     temp/=(dimention);
     accu_train = (100 - (temp)*100);
 
-
-
     // printf("training accuracy: %f \n", accu_train);
 
 }
+
 
 
 
@@ -261,7 +255,6 @@ int main() {
     for(int j=0;j<50;j++){
         for(int i=0;i<12288;i++){
             fscanf(file,"%f",&num);
-
             x_train[i][j] = (num/255.00);
             fseek(file,1,SEEK_CUR);
         }
