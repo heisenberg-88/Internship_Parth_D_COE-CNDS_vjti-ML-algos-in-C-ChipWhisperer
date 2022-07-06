@@ -3,7 +3,6 @@
 #include <math.h>
 
 
-
 // sigmoid
 // tested & working
 float sigmoid(float n){
