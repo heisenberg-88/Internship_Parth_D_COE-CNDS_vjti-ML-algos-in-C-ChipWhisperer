@@ -4,21 +4,31 @@
 #include <string.h>
 #include <search.h>
 
+struct TableData{
+    char* FruitColour;
+    int diam;
+    char* FruitName;
+};
 
+struct TableData test(struct TableData train_data[]){
+    struct TableData FALSEdata[3];
 
-int f(char* a[]){
-    for(int i=0;i<5;i++){
-        printf("%s \n",&a[i]);
-    }
+    return FALSEdata
 }
 int main() {
-	// char* a[5];
-    // for(int i=0;i<5;i++){
-    //     &a[i] = "apple";
+	struct TableData train_data[2];
+    for(int i=0;i<2;i++){
+        train_data[i].FruitColour = "Brown";
+        train_data[i].diam = 5;
+        train_data[i].FruitName = "Tom";
+    }
+
+    // for(int i=0;i<2;i++){
+    //     printf("%s \n",train_data[i].FruitColour);
+    //     printf("%d \n",train_data[i].diam);
+    //     printf("%s \n",train_data[i].FruitName);
+    //     printf("--------------------- \n");
     // }
-    // f(a);
-    char* a;
-    &a = "apple";
-    printf("%s \n",a);
-	return 0;
+    
+
 }
