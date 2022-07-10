@@ -5,16 +5,71 @@
 #include <search.h>
 #include<stdbool.h> 
 
+
+
 struct TableData{
     char FruitColour[50];
     int diam;
     char FruitName[50];
 };
 
+
 struct Question{
     char q[50];
-    float numq;
+    int numq;
+    float gain_data;
 };
+
+
+struct node {
+    struct TableData* data;
+    struct node* left;
+    struct node* right;
+    bool IsLeaf;
+    struct Leaf* leaf;
+};
+
+struct Leaf{
+    float ApplePercentage;
+    float GrapePercentage;
+    float LemonPercentage;
+};
+
+
+
+
+struct node* newNode(struct TableData train_data[])
+{
+    struct node* node = (struct node*)malloc(sizeof(struct node));
+
+    node->data = train_data;
+ 
+    node->left = NULL;
+    node->right = NULL;
+    node->IsLeaf = false;
+    node->leaf = NULL;
+    return (node);
+}
+
+struct Leaf* newLeaf(struct TableData train_data[]){
+    struct Leaf* leaf = (struct Leaf*)malloc(sizeof(struct Leaf));
+
+    int n = sizeof(train_data)/sizeof(train_data[0]);
+    int* counts_data = count_labels(train_data,n);
+
+    float sum = 0;
+    for(int i=0;i<3;i++){
+        sum+=counts_data[i];
+    }
+    
+    leaf->ApplePercentage = (float)counts_data[0]/sum;
+    leaf->GrapePercentage = (float)counts_data[1]/sum;
+    leaf->LemonPercentage = (float)counts_data[2]/sum;
+
+    return (leaf);
+}
+
+
 
 
 
@@ -211,9 +266,9 @@ float info_gain(struct TableData TRUE_rows[],struct TableData FALSE_rows[],float
 
 
 
-void best_question(struct TableData train_data[],int dim){
+struct Question* best_question(struct TableData train_data[],int dim){
     float best_gain = 0.0;
-    
+    struct Question* quest = malloc(sizeof(struct Question));
     float Current_uncertainity = gini(train_data,dim);
     char* ques = "#";
     int num = -1;
@@ -260,12 +315,24 @@ void best_question(struct TableData train_data[],int dim){
         }
     }
 
-    
-    
+    strcpy(quest->q,ques);
+    quest->numq = num; 
+    quest->gain_data = best_gain;
+
+    return quest;
     
 }
 
 
+
+struct node* build_Tree(struct TableData train_data[],int dim){
+    struct Question* qs = best_question(train_data,5);
+
+    if(qs->gain_data == 0){
+        return NULL;
+    }
+
+}
 
 
 
@@ -279,8 +346,7 @@ int main(){
         scanf("%s",train_data[i].FruitName);
     }
 
-    struct TableData*  TRUEdata = TrueRowsFinder(train_data,"Red",3,1,5,1);
-    int Tc = TRUErowsLen(train_data,"Red",3,1,5,1);
+    
 
     // for(int i=0;i<Tc;i++){
     //     // only pass int as reference as arrays decay into pointer
@@ -291,8 +357,24 @@ int main(){
     //     printf("\n");
     // }
 
-    best_question(train_data,5);
-    
+    // struct Question* qq = best_question(train_data,5);
+    // printf("%d \n",qq->numq);
+    // printf("%s \n",qq->q);
+    // printf("%f \n",qq->gain_data);
+
+    // For testing Binary Tree
+    // struct node* root = newNode(train_data);
+    // struct TableData*  TRUEdata = TrueRowsFinder(train_data,"Red",3,1,5,1);
+    // struct TableData*  FALSEdata = FalseRowsFinder(train_data,"Red",3,1,5,1);
+    // root->left = newNode(TRUEdata);
+    // root->right = newNode(FALSEdata);
+
+    // printf("------------------------------ \n");
+    // for(int i=0;i<5;i++){
+    //     printf("%s \n",root->data[i].FruitName);
+    // }
+
+
     
 }
 
