@@ -6,7 +6,6 @@
 #include<stdbool.h> 
 
 
-
 struct TableData{
     char FruitColour[50];
     int diam;
@@ -79,6 +78,9 @@ struct node* newNode(struct TableData train_data[])
     node->RIGHTleaf = NULL;
     return (node);
 }
+
+
+
 
 struct Leaf* newLeaf(struct TableData train_data[],int n){
     struct Leaf* leaf = (struct Leaf*)malloc(sizeof(struct Leaf));
@@ -161,9 +163,9 @@ struct TableData* TrueRowsFinder(struct TableData train_data[],char* question,in
         }
     }
 
-
-    return TRUEdata;
+   return TRUEdata;
 }
+
 struct TableData* FalseRowsFinder(struct TableData train_data[],char* question,int NumQuestion,int colnum,int rownum,int IsNumeric){
     
     int* TrueRowsIndexes = TRUEFALSEfinder(train_data,question,NumQuestion,colnum,rownum,IsNumeric);
@@ -235,7 +237,6 @@ int FALSErowsLen(struct TableData train_data[],char* question,int NumQuestion,in
     }
     return c;
 }
-
 
 
 

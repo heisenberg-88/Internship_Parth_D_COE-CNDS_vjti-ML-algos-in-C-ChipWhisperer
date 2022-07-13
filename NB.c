@@ -3,71 +3,219 @@
 #include <math.h>
 #include <string.h>
 
+// Classes
+// yes = 1 & no = 0
+static int Play[14] = {0,0,1,1,1,0,1,0,1,1,1,1,1,0};
 
-struct StringArray{
-    char* stringname;
-};
+// Features
+// Rainy = 1 , Overcast = 2 , Sunny = 3
+static int Outlook[14] = {1,1,2,3,3,3,2,1,1,1,1,2,2,3};
+static float OutlookLikelihood[3][2];
+
+// Hot = 1 , Mild = 2 , Cold = 3
+static int Temp[14] = {1,1,1,2,3,3,3,2,3,2,2,2,1,2};
+static float TempLikelihood[3][2];
+
+// Humidity High = 1 , Normal = 0
+static int Humidity[14] = {1,1,1,1,0,0,0,1,0,0,0,1,0,1};
+static float HumidityLikelihood[2][2];
+
+// Windy Yes = 1 & No = 0
+static int Windy[14] = {0,1,0,0,0,1,1,0,0,0,1,1,0,1};
+static float WindyLikelihood[3][2];
 
 
-// will store the unique strings from labels
-static char* temp1[5];
 
+static float YesPriorProb = 0.0;
+static float NoPriorProb = 0.0;
+static float YesPriorProb_counter = 0.0;
+static float NoPriorProb_counter = 0.0;
 
-// to calculate number of times the label is repeted
-int* class_counts(struct StringArray label_column[], int dim){
-    for(int i=0;i<dim;i++){
-        temp1[i] = "#";
+void calcPriorProb(){
+    int c1;
+    int c2;
+    for(int i=0;i<14;i++){
+        if(Play[i]==1){
+            c1+=1;
+        }else{
+            c2+=1;
+        }
     }
 
+    YesPriorProb = ((float)c1)/((float)(14));
+    NoPriorProb = ((float)c2)/((float)(14));
 
-    int curr_pos = 0;
-    int found;
-
-
-    for(int j=0;j<dim;j++){
-        found = 0;
-        for(int i=0;i<dim;i++){
-            if(strcmp(&label_column[j].stringname,temp1[i])==0){
-                found = 1;
-                break;
-            }
-        }
-        if(found == 0){
-            temp1[curr_pos] = (char*)&label_column[j].stringname;
-            curr_pos+=1;
-        }
-    }
+    YesPriorProb_counter = ((float)c1);
+    NoPriorProb_counter = ((float)c2);
     
-
-    char* tempstring ;
-    int* counts_array = malloc(sizeof(int)*dim);
-    for(int i=0;i<dim;i++){
-        counts_array[i] = 0;
-    }
-
-    int i = 0;
-    while(temp1[i]!="#" && i<dim){
-        tempstring = temp1[i];
-        for(int j=0;j<dim;j++){
-            if(strcmp(tempstring,&label_column[j].stringname)==0){
-                (counts_array[i])+=1;
-            }
-        }
-        i++;
-    }
-
-    return counts_array;
 }
 
 
-int main(){
-    struct StringArray label_column[5];
-    for(int i=0;i<5;i++){
-        scanf("%s",&label_column[i].stringname);
-    }
-    int* counts_array = class_counts(label_column,5);
+void Likelihood(){
+    //init
+    int OutlookRainy = 0;
+    int OutlookOvercast = 0;
+    int OutlookSunny = 0;
+    int TempHot = 0;
+    int TempMild = 0;
+    int TempCold = 0;
+    int HumHigh = 0;
+    int HumNormal = 0;
+    int WindyYes = 0;
+    int WindyNo = 0;
 
-    for(int i=0;i<5;i++){
-        printf("%s -> %d \n",temp1[i],counts_array[i]);
+    int OutlookRainy_NO = 0;
+    int OutlookOvercast_NO = 0;
+    int OutlookSunny_NO = 0;
+    int TempHot_NO = 0;
+    int TempMild_NO = 0;
+    int TempCold_NO = 0;
+    int HumHigh_NO = 0;
+    int HumNormal_NO = 0;
+    int WindyYes_NO = 0;
+    int WindyNo_NO = 0;
+
+    //counter
+    for(int i=0;i<14;i++){
+        if(Play[i]==1){
+            if(Outlook[i]==1){
+                OutlookRainy+=1;
+            }
+            else if(Outlook[i]==2){
+                OutlookOvercast+=1;
+            }
+            else if(Outlook[i]==3){
+                OutlookSunny+=1;
+            }
+            
+
+
+            if(Temp[i]==1){
+                TempHot+=1;
+            }
+            else if(Temp[i]==2){
+                TempMild+=1;
+            }
+            else if(Temp[i]==3){
+                TempCold+=1;
+            }
+
+
+
+            if(Humidity[i]==1){
+                HumHigh+=1;
+            }
+            else if(Humidity[i]==0){
+                HumNormal+=1;
+            }
+
+
+
+            if(Windy[i]==1){
+                WindyYes+=1;
+            }
+            else if(Windy[i]==0){
+                WindyNo+=1;
+            }
+        }
+        else{
+            if(Outlook[i]==1){
+                OutlookRainy_NO+=1;
+            }
+            else if(Outlook[i]==2){
+                OutlookOvercast_NO+=1;
+            }
+            else if(Outlook[i]==3){
+                OutlookSunny_NO+=1;
+            }
+            
+
+
+            if(Temp[i]==1){
+                TempHot_NO+=1;
+            }
+            else if(Temp[i]==2){
+                TempMild_NO+=1;
+            }
+            else if(Temp[i]==3){
+                TempCold_NO+=1;
+            }
+
+
+
+            if(Humidity[i]==1){
+                HumHigh_NO+=1;
+            }
+            else if(Humidity[i]==0){
+                HumNormal_NO+=1;
+            }
+
+
+
+            if(Windy[i]==1){
+                WindyYes_NO+=1;
+            }
+            else if(Windy[i]==0){
+                WindyNo_NO+=1;
+            }
+        }
     }
+
+
+    //outlook
+    OutlookLikelihood[0][0] = ((float)OutlookRainy)/YesPriorProb_counter;
+    OutlookLikelihood[1][0] = ((float)OutlookOvercast)/YesPriorProb_counter;
+    OutlookLikelihood[2][0] = ((float)OutlookSunny)/YesPriorProb_counter;
+
+    OutlookLikelihood[0][1] = ((float)OutlookRainy_NO)/NoPriorProb_counter;
+    OutlookLikelihood[1][1] = ((float)OutlookOvercast_NO)/NoPriorProb_counter;
+    OutlookLikelihood[2][1] = ((float)OutlookSunny_NO)/NoPriorProb_counter;
+
+    //temp
+    TempLikelihood[0][0] = ((float)TempHot)/YesPriorProb_counter;
+    TempLikelihood[1][0] = ((float)TempMild)/YesPriorProb_counter;
+    TempLikelihood[2][0] = ((float)TempCold)/YesPriorProb_counter;
+
+    TempLikelihood[0][1] = ((float)TempHot_NO)/NoPriorProb_counter;
+    TempLikelihood[1][1] = ((float)TempMild_NO)/NoPriorProb_counter;
+    TempLikelihood[2][1] = ((float)TempCold_NO)/NoPriorProb_counter;
+
+    //Humidity
+    HumidityLikelihood[0][0] = ((float)HumHigh)/YesPriorProb_counter;
+    HumidityLikelihood[1][0] = ((float)HumNormal)/YesPriorProb_counter;
+
+    HumidityLikelihood[0][1] = ((float)HumHigh_NO)/NoPriorProb_counter;
+    HumidityLikelihood[1][1] = ((float)HumNormal_NO)/NoPriorProb_counter;
+
+    //windy 
+    WindyLikelihood[0][0] = ((float)WindyYes)/YesPriorProb_counter;
+    WindyLikelihood[1][0] = ((float)WindyNo)/YesPriorProb_counter;
+
+    WindyLikelihood[0][1] = ((float)WindyYes_NO)/NoPriorProb_counter;
+    WindyLikelihood[1][1] = ((float)WindyNo_NO)/NoPriorProb_counter;
+}
+
+
+
+int main(){
+
+    // for(int i=0;i<3;i++){
+    //     printf("%s \n",arr[i]);
+    // }
+    calcPriorProb();
+    Likelihood();
+
+    // Sunny Cold HighHum WindYes
+    float Vyes = (YesPriorProb) * (OutlookLikelihood[2][0]) * (TempLikelihood[2][0]) * (HumidityLikelihood[1][0]) * (WindyLikelihood[1][0]);
+    float Vno = (NoPriorProb) * (OutlookLikelihood[2][1]) * (TempLikelihood[2][1]) * (HumidityLikelihood[1][1]) * (WindyLikelihood[1][1]);
+
+    float Y = (Vyes)/(Vyes+Vno);
+    float N = (Vno)/(Vno+ Vyes);
+
+    if(Y>=N){
+        printf("True \n");
+    }else{
+        printf("False \n");
+    }
+
 }
