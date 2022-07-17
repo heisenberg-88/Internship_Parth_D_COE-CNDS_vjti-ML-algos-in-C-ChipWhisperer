@@ -1,0 +1,6 @@
+Decision Tree - 0
+knn - 1
+Linear Regression - 2
+Logistic regression Neural network - 3
+Naive bayes - 4
+Support vector machine - 5
